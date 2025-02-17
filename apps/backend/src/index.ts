@@ -6,13 +6,20 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+const userSocketMap: { [key: string]: string } = {};
 io.on("connection", (socket: Socket) => {
   console.log(socket.id);
-  socket.on("user-message", (data) => {
-    console.log(data);
+  const userId = socket.handshake.query.userId as string;
+  if (userId) {
+    userSocketMap[userId] = socket.id;
+  }
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  socket.on("disconnect", () => {
+    delete userSocketMap[userId];
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 
-server.listen(3000, () => {
+server.listen(5000, () => {
   console.log("Server running on port 3000");
 });

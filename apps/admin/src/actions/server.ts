@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@repo/database";
-
+import { recieverId } from "../utils/util";
 export const getUsers = async () => {
   try {
     const users = await prisma.user.findMany({
@@ -19,8 +19,6 @@ export const getUsers = async () => {
     throw new Error(err);
   }
 };
-
-export const recieverId = "cm77d254m0000hw22pfyour2a";
 
 export const getCurrentUser = async ({ usermail }: { usermail: string }) => {
   try {
@@ -95,7 +93,7 @@ export const createChat = async ({
 
 export const getMessages = async ({ senderId }: { senderId: string }) => {
   try {
-    const getMessages = await prisma.conversation.findFirst({
+    const currentConversation = await prisma.conversation.findFirst({
       include: {
         messages: {
           include: {
@@ -112,13 +110,13 @@ export const getMessages = async ({ senderId }: { senderId: string }) => {
     if (!getMessages) {
       return {
         message: "no messages",
-        getMessages: [],
+        currentConversation: [],
       };
     }
 
     return {
       message: "all messages",
-      getMessages,
+      currentConversation: currentConversation,
     };
   } catch (err: any) {
     throw new Error(err);

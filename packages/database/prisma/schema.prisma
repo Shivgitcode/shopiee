@@ -59,6 +59,7 @@ model User {
   @@map("users")
 }
 
+
 model VerificationToken {
   identifier String
   token      String

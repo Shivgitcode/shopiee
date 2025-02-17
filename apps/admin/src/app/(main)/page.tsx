@@ -10,20 +10,9 @@ import {
   Send,
 } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  createChat,
-  getMessages,
-  getUsers,
-  recieverId,
-} from "@/actions/server";
-
-type Message = {
-  id: number;
-  sender: string;
-  content: string;
-  timestamp: string;
-  isAdmin: boolean;
-};
+import { createChat, getMessages, getUsers } from "@/actions/server";
+import { Message, Conversation } from "@/utils/types";
+import { recieverId } from "@/utils/util";
 
 function App() {
   const [activeTab, setActiveTab] = useState("messages");
@@ -52,10 +41,11 @@ function App() {
     queryKey: ["customers"],
     queryFn: getUsers,
   });
-  const query2 = useQuery({
+  const query2 = useQuery<Conversation>({
     queryKey: ["messages"],
-    queryFn: () => {
-      return getMessages({ senderId: selectedChat as string });
+    queryFn: async () => {
+      return (await getMessages({ senderId: selectedChat as string }))
+        .currentConversation;
     },
   });
   const mutationOne = useMutation({
@@ -69,7 +59,7 @@ function App() {
     query2.refetch();
   };
 
-  console.log(query2.data?.getMessages);
+  console.log(query2.data);
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
 
@@ -224,7 +214,7 @@ function App() {
                       </h2>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                      {query2.data?.getMessages.messages.map((message) => (
+                      {query2.data?.messages.map((message) => (
                         <div
                           key={message.id}
                           className={`flex ${message.sender.name === "admin" ? "justify-end" : "justify-start"}`}

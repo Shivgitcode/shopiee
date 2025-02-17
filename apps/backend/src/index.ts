@@ -14,6 +14,11 @@ io.on("connection", (socket: Socket) => {
     userSocketMap[userId] = socket.id;
   }
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  socket.on("sendMessage", (data) => {
+    socket
+      .to(data.recieverId)
+      .emit("recieveMessage", { message: data.message });
+  });
   socket.on("disconnect", () => {
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));

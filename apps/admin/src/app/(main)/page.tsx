@@ -13,10 +13,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createChat, getMessages, getUsers } from "@/actions/server";
 import { Message, Conversation } from "@/utils/types";
 import { recieverId } from "@/utils/util";
+import { useSocketContext } from "@/context/SocketContext";
 
 function App() {
   const [activeTab, setActiveTab] = useState("messages");
   const [newMessage, setNewMessage] = useState("");
+  const { socket } = useSocketContext();
   const [selectedChat, setSelectedChat] = useState<string | null>(
     "clyb4fxin00001plerlypglcn"
   );
@@ -52,6 +54,10 @@ function App() {
     mutationFn: createChat,
     onSuccess: (data) => {
       console.log(data);
+      socket.emit("sendMessage", {
+        message: data.newMessage.body,
+        recieverId: selectedChat,
+      });
     },
   });
   const handleSelectedChat = async (id: string) => {

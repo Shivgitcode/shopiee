@@ -1,5 +1,7 @@
 "use client";
+import { useSocketContext } from "@/context/SocketContext";
 import { createChat, getCurrentUser, getMessages } from "@/utils/Chat";
+import { recieverId } from "@/utils/id";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -69,6 +71,8 @@ export function ChatWindow() {
   const [conversation, setConversation] = useState([]);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const { socket } = useSocketContext();
+
   if (session.status === "unauthenticated") {
     router.push("/login");
   }
@@ -105,6 +109,8 @@ export function ChatWindow() {
         senderId: user?.id as string,
         body: newMessage,
       });
+      socket.emit("sendMessage", { message: newMessage, recieverId });
+
       console.log(newChat.message);
     } catch (error: any) {
       toast.error(error.message);

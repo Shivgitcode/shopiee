@@ -34,7 +34,7 @@ export default function SocketProviderContext({
   );
 }
 
-export const socketContext = async (): Promise<IOSocket> => {
+export const useSocketContext = async (): Promise<IOSocket> => {
   const context = useContext(SocketContext);
   if (typeof context === undefined) {
     throw new Error("context is undefined");

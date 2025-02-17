@@ -1,8 +1,7 @@
 "use server";
 
 import { prisma } from "@repo/database";
-
-const recieverId = "cm77d254m0000hw22pfyour2a";
+import { recieverId } from "./id";
 
 export const getCurrentUser = async ({ usermail }: { usermail: string }) => {
   try {
